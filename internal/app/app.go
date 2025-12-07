@@ -3,7 +3,6 @@ package app
 import (
 	"context"
 	"log"
-	"os"
 	"time"
 
 	"github.com/Vladimirmoscow84/Events_Calendar/internal/handlers"
@@ -12,10 +11,20 @@ import (
 	"github.com/Vladimirmoscow84/Events_Calendar/internal/storage"
 	"github.com/Vladimirmoscow84/Events_Calendar/internal/storage/inmemory"
 	"github.com/Vladimirmoscow84/Events_Calendar/internal/worker"
+	"github.com/wb-go/wbf/config"
 	"github.com/wb-go/wbf/ginext"
 )
 
 func Run() {
+
+	cfg := config.New()
+	err := cfg.LoadEnvFiles(".env")
+	if err != nil {
+		log.Fatalf("[app] error of loading cfg: %v", err)
+	}
+	cfg.EnableEnv("")
+	serverAddr := cfg.GetString("SERVER_ADDRESS")
+
 	memStore := inmemory.New()
 
 	store := storage.New(memStore)
@@ -45,8 +54,6 @@ func Run() {
 	worker.RunCleaner(ctx, worker.CleanerConfig{
 		Interval: 1 * time.Minute,
 	}, store)
-
-	serverAddr := os.Getenv("SERVER_ADDRESS")
 
 	log.Printf("[app] server running on %s", serverAddr)
 	err = engine.Run(serverAddr)
