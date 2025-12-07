@@ -3,7 +3,6 @@ package inmemory
 import (
 	"context"
 	"errors"
-	"log"
 	"sync"
 	"time"
 
@@ -27,41 +26,40 @@ func New() *Store {
 
 // Create создает событие
 func (s *Store) Create(ctx context.Context, event *model.Event) (int, error) {
-	s.mu.RLock()
-	defer s.mu.RUnlock()
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
 	s.LastID++
 
 	event.EventID = s.LastID
 	s.events[event.EventID] = *event
-	log.Println("[store] event created")
+
 	return event.EventID, nil
 }
 
 // Update обновляет событие
 func (s *Store) Update(ctx context.Context, event *model.Event) error {
-	s.mu.RLock()
-	defer s.mu.RUnlock()
+	s.mu.Lock()
+	defer s.mu.Unlock()
 
 	_, ok := s.events[event.EventID]
 	if !ok {
-		log.Println("[store] event not found")
 		return ErrNotFound
 	}
 	s.events[event.EventID] = *event
-	log.Printf("[store] event:%d upadted", event.EventID)
 	return nil
 }
 
 // Delete удаляет событие
 func (s *Store) Delete(ctx context.Context, eventID int) error {
-	s.mu.RLock()
-	defer s.mu.RUnlock()
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
 	_, ok := s.events[eventID]
 	if !ok {
-		log.Println("[store] event not found")
 		return ErrNotFound
 	}
-	log.Printf("[store] event:%d deleted", eventID)
+
 	delete(s.events, eventID)
 	return nil
 
@@ -71,9 +69,10 @@ func (s *Store) Delete(ctx context.Context, eventID int) error {
 func (s *Store) EventsForDay(ctx context.Context, userID int, day time.Time) ([]model.Event, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
-	var result []model.Event
 
+	var result []model.Event
 	y, m, d := day.Date()
+
 	for _, e := range s.events {
 		ey, em, ed := e.Date.Date()
 		if e.UserID == userID && y == ey && m == em && d == ed {
@@ -87,12 +86,13 @@ func (s *Store) EventsForDay(ctx context.Context, userID int, day time.Time) ([]
 func (s *Store) EventsForWeek(ctx context.Context, userID int, day time.Time) ([]model.Event, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
+
 	var result []model.Event
 	year, week := day.ISOWeek()
 
 	for _, e := range s.events {
-		ey, em := e.Date.ISOWeek()
-		if e.UserID == userID && year == ey && week == em {
+		ey, ew := e.Date.ISOWeek()
+		if e.UserID == userID && year == ey && week == ew {
 			result = append(result, e)
 		}
 	}
@@ -109,7 +109,6 @@ func (s *Store) EventsForMonth(ctx context.Context, userID int, day time.Time) (
 
 	for _, e := range s.events {
 		ey, em, _ := e.Date.Date()
-
 		if e.UserID == userID && y == ey && m == em {
 			result = append(result, e)
 		}
