@@ -8,9 +8,9 @@ import (
 )
 
 type store interface {
-	Create(ctx context.Context, event *model.Event) (int, error)
-	Update(ctx context.Context, event *model.Event) error
-	Delete(ctx context.Context, eventID int) error
+	CreateEvent(ctx context.Context, event *model.Event) (int, error)
+	UpdateEvent(ctx context.Context, event *model.Event) error
+	DeleteEvent(ctx context.Context, eventID int) error
 	EventsForDay(ctx context.Context, userID int, day time.Time) ([]model.Event, error)
 	EventsForWeek(ctx context.Context, userID int, day time.Time) ([]model.Event, error)
 	EventsForMonth(ctx context.Context, userID int, day time.Time) ([]model.Event, error)
@@ -27,16 +27,16 @@ func New(s store) *Storage {
 	}
 }
 
-func (s *Storage) Create(ctx context.Context, event *model.Event) (int, error) {
-	return s.store.Create(ctx, event)
+func (s *Storage) CreateEvent(ctx context.Context, event *model.Event) (int, error) {
+	return s.store.CreateEvent(ctx, event)
 }
 
-func (s *Storage) Update(ctx context.Context, event *model.Event) error {
-	return s.store.Update(ctx, event)
+func (s *Storage) UpdateEvent(ctx context.Context, event *model.Event) error {
+	return s.store.UpdateEvent(ctx, event)
 }
 
-func (s *Storage) Delete(ctx context.Context, eventID int) error {
-	return s.store.Delete(ctx, eventID)
+func (s *Storage) DeleteEvent(ctx context.Context, eventID int) error {
+	return s.store.DeleteEvent(ctx, eventID)
 }
 
 func (s *Storage) EventsForDay(ctx context.Context, userID int, day time.Time) ([]model.Event, error) {

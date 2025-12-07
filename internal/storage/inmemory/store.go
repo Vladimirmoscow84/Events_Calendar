@@ -25,7 +25,7 @@ func New() *Store {
 }
 
 // Create создает событие
-func (s *Store) Create(ctx context.Context, event *model.Event) (int, error) {
+func (s *Store) CreateEvent(ctx context.Context, event *model.Event) (int, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -38,7 +38,7 @@ func (s *Store) Create(ctx context.Context, event *model.Event) (int, error) {
 }
 
 // Update обновляет событие
-func (s *Store) Update(ctx context.Context, event *model.Event) error {
+func (s *Store) UpdateEvent(ctx context.Context, event *model.Event) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -51,7 +51,7 @@ func (s *Store) Update(ctx context.Context, event *model.Event) error {
 }
 
 // Delete удаляет событие
-func (s *Store) Delete(ctx context.Context, eventID int) error {
+func (s *Store) DeleteEvent(ctx context.Context, eventID int) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
