@@ -6,13 +6,13 @@ import (
 	"time"
 
 	"github.com/Vladimirmoscow84/Events_Calendar/internal/model"
-	"github.com/gin-gonic/gin"
+	"github.com/wb-go/wbf/ginext"
 )
 
 type eventsConstructor interface {
-	Create(ctx context.Context, event *model.Event) (int, error)
-	Update(ctx context.Context, event *model.Event) error
-	Delete(ctx context.Context, eventID int) error
+	CreateEvent(ctx context.Context, event *model.Event) (int, error)
+	UpdateEvent(ctx context.Context, event *model.Event) error
+	DeleteEvent(ctx context.Context, eventID int) error
 }
 
 type eventsGetter interface {
@@ -22,12 +22,12 @@ type eventsGetter interface {
 }
 
 type Router struct {
-	Engine      *gin.Engine
+	Engine      *ginext.Engine
 	Constructor eventsConstructor
 	Getter      eventsGetter
 }
 
-func New(e *gin.Engine, ctr eventsConstructor, gtr eventsGetter) (*Router, error) {
+func New(e *ginext.Engine, ctr eventsConstructor, gtr eventsGetter) (*Router, error) {
 	if e == nil || ctr == nil || gtr == nil {
 		return nil, errors.New("[handlers] invalid Router parametrs")
 	}

@@ -26,7 +26,7 @@ func (r *Router) DeleteEventHandler(c *ginext.Context) {
 		return
 	}
 
-	err = r.Constructor.Delete(c.Request.Context(), req.EventID)
+	err = r.Constructor.DeleteEvent(c.Request.Context(), req.EventID)
 	if err != nil {
 		c.JSON(http.StatusServiceUnavailable, ginext.H{
 			"error": err.Error(),

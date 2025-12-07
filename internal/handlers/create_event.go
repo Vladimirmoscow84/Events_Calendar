@@ -36,7 +36,7 @@ func (r *Router) CreateEventHandler(c *ginext.Context) {
 		return
 	}
 
-	id, err := r.Constructor.Create(c.Request.Context(), &event)
+	id, err := r.Constructor.CreateEvent(c.Request.Context(), &event)
 	if err != nil {
 		c.JSON(http.StatusServiceUnavailable, ginext.H{
 			"error": err.Error(),
